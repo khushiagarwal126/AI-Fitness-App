@@ -45,17 +45,17 @@ const Dashboard = () => {
 
   const motivation = getMotivationalMessage(totalCalories, totalActiveMinutes, DAILY_CALORIE_LIMIT)
 
-  console.log("totalCalories:", totalCalories);
+console.log("totalCalories:", totalCalories);
 console.log("totalBurned:", totalBurned);
 console.log("todayFood:", todayFood);
 console.log("allFoodLogs:", allFoodLogs);
 
   return (
     <div className="page-container"> 
+
     {/* Header */}
     <div className="dashboard-header">
       <p className="text-emerald-100 text-sm font-medium">Welcome back
-      
       </p>
       <h1 className="text-2xl font-bold mt-1">{`Hi there! 👋 ${user?.username}`}</h1>
 
