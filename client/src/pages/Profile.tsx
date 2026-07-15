@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext"
 import { useTheme } from "../context/ThemeContext";
-import type { ProfileFormData, UserData } from "../types";
+import type { ProfileFormData } from "../types";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import { Calendar, LogOutIcon, MoonIcon, Scale, SunIcon, Target, User } from "lucide-react";
 import { goalLabels, goalOptions } from "../assets/assets";
 import Input from "../components/ui/Input";
 import Select from "../components/ui/Select";
-import mockApi from "../assets/mockApi";
 import toast from "react-hot-toast";
+import api from "../configs/api";
 
 
 const Profile = () => {
@@ -40,25 +40,43 @@ const Profile = () => {
 
 const handleSave = async ()=>{
   try {
-    //Mock API Update
-    const updates: Partial<UserData> = {
-      ...formData,
-      goal: formData.goal as 'lose' | 'maintain'|
-    'gain'    };
-    await mockApi.user.update(user?.id || '', updates)
-    await fetchUser(User?.token || '')
+   
+    await api.put(
+      `/api/users/${user?.id}`, 
+      formData,
+    
+          {
+        headers: {
+          Authorization: `Bearer ${user?.token}`
+        }
+      }
+    )
+    await fetchUser(user?.token || '')
     toast.success('Profile updated sucessfully')
+    setIsEditing(false)
+
   } catch (error: any){
     console.log(error);
     toast.error(error?.message || "Failed to updated profile");
   }
-  setIsEditing(false)
+  
 }
 
 const getStats = ()=>{
-  const totalFoodEntries = allFoodLogs?.length || 0;
-  const totalActivities = allActivityLogs?.length || 0;
-  return {totalFoodEntries, totalActivities}
+  const today = new Date().toISOString().split("T")[0];
+
+  const todayFoodLogs = allFoodLogs.filter(
+    (food) => food.createdAt?.split("T")[0] === today
+  );
+
+  const todayActivities = allActivityLogs.filter(
+    (activity) => activity.createdAt?.split("T")[0] === today
+  );
+
+  return {
+    totalFoodEntries: todayFoodLogs.length,
+    totalActivities: todayActivities.length
+  };
 }
 
 const stats = getStats();

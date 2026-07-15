@@ -6,7 +6,7 @@ import type { ProfileFormData, UserData } from "../types"
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button"
 import { ArrowRight,Target } from "lucide-react"
-import mockApi from "../assets/mockApi"
+import api from "../configs/api"
 import { goalOptions } from "../assets/assets"
 import { ageRanges } from "../assets/assets"
 import Slider from "../components/ui/Slider"
@@ -48,10 +48,16 @@ const handleNext = async ()=>{
 
     };
     localStorage.setItem('fitnessUser', JSON.stringify(userData))
-    await mockApi.user.update(user?.id || "", userData as unknown as Partial<UserData>)
-    toast.success('Profile updated successfully')
+    try {
+      await api.put(`/api/users/${user?.id}`, userData)
+      toast.success('Profile updated successfully')
     setOnboardingCompleted(true)
     fetchUser(user?.token || "")
+    } catch (error: any) {
+      toast.error(error.message)
+      
+    }
+    
   }
   }
 
